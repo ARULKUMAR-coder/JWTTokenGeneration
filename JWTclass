@@ -7,7 +7,7 @@
             {
                 new Claim(JwtRegisteredClaimNames.Email,Usere.Email ?? ""),
                 new Claim("UserName",Usere.UserName),
-                new Claim("UserID",model.Id.ToString()),
+                new Claim("UserID",model.Id.ToString()),s
                 new Claim("LanguageID",model.LanguageID.ToString())
 
             };
