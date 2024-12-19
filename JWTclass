@@ -1,0 +1,21 @@
+        public  CRUD_OPModel GenerateToken(TrioUserModel Usere, CRUD_OPModel model,string Resource)
+        {
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
+            var creadentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            List<Claim> claim = new List<Claim>()
+            {
+                new Claim(JwtRegisteredClaimNames.Email,Usere.Email ?? ""),
+                new Claim("UserName",Usere.UserName),
+                new Claim("UserID",model.Id.ToString()),
+                new Claim("LanguageID",model.LanguageID.ToString())
+
+            };
+            IEnumerable<Claim> claims = claim;
+            var token = new JwtSecurityToken(_config["JWT:Issuer"], _config["JWT:Audience"], claims, expires: DateTime.Now.AddMinutes(Convert.ToInt32(_config["JWT:DurationMinutes"])), signingCredentials: creadentials);
+            string values = new JwtSecurityTokenHandler().WriteToken(token);
+            string encrptedToken = EncryptorDecryptor.Encrypt(values);
+            model.token= encrptedToken;// this is the token
+            bool success=_userValidationManager.SetUserToken(encrptedToken,model.Id,Resource);   
+            return model;
+        }
